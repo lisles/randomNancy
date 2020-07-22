@@ -1,0 +1,15 @@
+{
+  "name": "randomNancy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Lee Isles <leeisles@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@slack/web-api": "^5.10.0",
+    "aws-sdk": "^2.714.2",
+    "dotenv": "^8.2.0"
+  }
+}
