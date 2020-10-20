@@ -1,10 +1,5 @@
 const AWS = require('aws-sdk');
 
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESSKEYID,
-  secretAccessKey: process.env.AWS_SECRETACCESSKEY
-});
-
 const s3Params = {
   Bucket: process.env.AWS_BUCKET,
 };
