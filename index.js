@@ -27,29 +27,45 @@ const web = new WebClient(token);
   const channels = conversations.channels;
   console.log(`Got ${channels.length} Channels`);
   
+  let channelAggs = [];
   // loop through the channels
   for (channel of channels) {
     console.log('---------------')
-    console.log(`${channel.id} [${channel.name}]`)
+    console.log(`${channel.id} [${channel.name}]`)    
+    
     // randomNancy joins -- she must be in the channel to do history
     await web.conversations.join({channel: channel.id});
 
     // get all the messages for analysis
     const channelHistory = await web.conversations.history({channel: channel.id})
+    console.log(channelHistory.messages.length);
+    let maxTS = Math.max.apply(Math, channelHistory.messages.map(function(o) { return o.ts; }))
 
-    // post a message
-    // const postResponse = await web.chat.postMessage({
-    //   "channel": channel.id,
-    //   "blocks": [
-    //     {
-    //       "type": "image",
-    //       "image_url": "https://random-nancy.s3.amazonaws.com/Nancy1.jpg"
-    //     }
-    //   ]
-    // })
-    // console.log(postResponse);
-    
+    channelAggs.push({
+      channelID: channel.id,
+      maxTS: maxTS,
+      numberMessages: channelHistory.messages.length});    
   }
+
+  console.log(channelAggs);
+  const max = channelAggs.reduce(function(prev, current) {
+    return (prev.maxTS > current.maxTS) ? prev : current
+  }) //returns object
+  console.log(max)
+
+
+  // post a message
+  const postResponse = await web.chat.postMessage({
+    "channel": max.channelID,
+    "blocks": [
+      {
+        "type": "image",
+        "image_url": randomFile,
+        "alt_text": "randomNancy Image"
+      }
+    ]
+  })
+  console.log(postResponse);
 
 })();
 
