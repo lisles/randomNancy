@@ -1,9 +1,28 @@
+require('dotenv').config();
 const { Chance } = require('chance');
+
+const dayjs = require('dayjs');
+var utc = require('dayjs/plugin/utc')
+
+const { DateTime } = require('luxon');
 var chance= new Chance();
 
-var d = new Date();
-console.log(d.getTime().toLocaleString())
-console.log(Date.now())
+console.log(new Date())
+
+dayjs.extend(utc)
+console.log('-----') // dayjs
+console.log(dayjs.utc().format())
+console.log(dayjs.utc().format())
+
+console.log('-----') // ------ luxon
+var now = DateTime.utc();
+console.log(now.toLocaleString()); //10/21/2020
+console.log(now.time_to_simple())
+console.log(now.zoneName);
+
+console.log('-----')
+console.log(process.env.POST_WINDOW_UTC)
+
 
 // for (i = 0; i < 100; i++) {
 //   console.log(chance.weighted([false, true], [100, 1]));
