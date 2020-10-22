@@ -1,29 +1,25 @@
 require('dotenv').config();
+
 const { Chance } = require('chance');
-
-const dayjs = require('dayjs');
-var utc = require('dayjs/plugin/utc')
-
 const { DateTime } = require('luxon');
-var chance= new Chance();
 
-console.log(new Date())
+/* 
+looking at luxon for date compare stuff. 
+maybe config should be in ET and let luxon manage translating that to UTC
+so that we don't have to worry about dst/est offsets
+*/
+const postWindow = JSON.parse(process.env.POST_WINDOW_UTC)
 
-dayjs.extend(utc)
-console.log('-----') // dayjs
-console.log(dayjs.utc().format())
-console.log(dayjs.utc().format())
+const dtNow = DateTime.utc().toISO();
+const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO()
+const dtEnd = DateTime.fromFormat(postWindow.end, 'H:mm', {zone: 'utc'}).toISO()
 
-console.log('-----') // ------ luxon
-var now = DateTime.utc();
-console.log(now.toLocaleString()); //10/21/2020
-console.log(now.time_to_simple())
-console.log(now.zoneName);
-
-console.log('-----')
-console.log(process.env.POST_WINDOW_UTC)
+console.log(`now: ${dtNow} \nstart: ${dtStart} \nend: ${dtEnd}`)
+console.log( (dtNow >= dtStart && dtNow <= dtEnd) ? 'between' : 'outside' )
 
 
+//  chance stuff
+// var chance= new Chance();
 // for (i = 0; i < 100; i++) {
 //   console.log(chance.weighted([false, true], [100, 1]));
 // }
