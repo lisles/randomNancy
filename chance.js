@@ -1,7 +1,7 @@
 require('dotenv').config();
 
 const { Chance } = require('chance');
-const { DateTime } = require('luxon');
+const { DateTime, Interval } = require('luxon');
 
 /* 
 looking at luxon for date compare stuff. 
@@ -11,18 +11,21 @@ so that we don't have to worry about dst/est offsets
 const postWindow = JSON.parse(process.env.POST_WINDOW_UTC)
 
 const dtNow = DateTime.utc().toISO();
-const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO()
-const dtEnd = DateTime.fromFormat(postWindow.end, 'H:mm', {zone: 'utc'}).toISO()
+const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO();
+const dtEnd = DateTime.fromFormat(postWindow.end, 'H:mm', {zone: 'utc'}).toISO();
+const nHoursOpen = Interval.fromDateTimes(DateTime.fromISO(dtStart), DateTime.fromISO(dtEnd)).count('hours');
 
 console.log(`now: ${dtNow} \nstart: ${dtStart} \nend: ${dtEnd}`)
 console.log( (dtNow >= dtStart && dtNow <= dtEnd) ? 'between' : 'outside' )
 
-
 //  chance stuff
-// var chance= new Chance();
+var chance= new Chance();
 // for (i = 0; i < 100; i++) {
 //   console.log(chance.weighted([false, true], [100, 1]));
 // }
+
+console.log(chance.weighted(['a', 'b', 'c', 'd'], [1, 2, 3, 4]));
+console.log(chance.weighted([false, true], [nHoursOpen, 1]))
 
 // const data = [
 //   ['Apples', 10],
