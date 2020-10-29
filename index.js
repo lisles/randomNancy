@@ -9,6 +9,11 @@ const token = process.env.BOT_TOKEN;
 const web = new WebClient(token);
 var chance= new Chance();
 
+
+function logging(msg) {
+  console.log(`[${DateTime.utc().toISO()}]::${msg}`);
+}
+
 (async () => {
   // get window of posting from .env
   const postWindow = JSON.parse(process.env.POST_WINDOW_UTC)
@@ -26,7 +31,7 @@ var chance= new Chance();
 
       // get random file from s3
       const randomFile = await Files.randomFile()
-      console.log(randomFile)
+      logging(`file: ${randomFile}`);
       
       // get team info
       const team = await web.team.info();
@@ -42,20 +47,15 @@ var chance= new Chance();
       // invite RandomNancy to all channels, see what's in em 
       const conversations = await web.conversations.list();  
       const channels = conversations.channels;
-      // console.log(`Got ${channels.length} Channels`);
       
       let channelAggs = [];
       // loop through the channels
-      for (channel of channels) {
-        // console.log('---------------')
-        // console.log(`${channel.id} [${channel.name}]`)    
-        
+      for (channel of channels) {        
         // randomNancy joins -- she must be in the channel to do history
         await web.conversations.join({channel: channel.id});
 
         // get all the messages for analysis
         const channelHistory = await web.conversations.history({channel: channel.id})
-        // console.log(channelHistory.messages.length);
         let maxTS = Math.max.apply(Math, channelHistory.messages.map(function(o) { return o.ts; }))
 
         channelAggs.push({
@@ -64,11 +64,9 @@ var chance= new Chance();
           numberMessages: channelHistory.messages.length});    
       }
 
-      // console.log(channelAggs);
       const max = channelAggs.reduce(function(prev, current) {
         return (prev.maxTS > current.maxTS) ? prev : current
       }) //returns object
-      // console.log(max)
 
       // post a message
       const postResponse = await web.chat.postMessage({
@@ -81,8 +79,9 @@ var chance= new Chance();
           }
         ]
       })
-      // console.log(postResponse);
-    } else console.log('no chance')
-  } else console.log('window closed')
+      logging(postResponse);
+      
+    } else logging('no chance')
+  } else logging('window closed')
 })();
 
