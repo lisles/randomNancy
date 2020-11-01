@@ -78,7 +78,7 @@ function logging(msg) {
           }
         ]
       })
-      logging(postResponse);
+      logging(JSON.stringify(postResponse));
 
     } else logging('no chance')
   } else logging('window closed')
