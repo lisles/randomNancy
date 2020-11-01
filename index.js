@@ -11,7 +11,7 @@ var chance = new Chance();
 
 
 function logging(msg) {
-  process.stdout.write(`[${DateTime.utc().toISO()}]::${msg}`);
+  process.stdout.write(`[${DateTime.utc().toISO()}]::${msg}\n`);
 }
 
 (async () => {
