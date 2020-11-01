@@ -1,13 +1,13 @@
-require('dotenv').config();
+const settings = require('./settings.json');
 
 const { DateTime, Interval } = require('luxon');
 const { Chance } = require('chance');
 const { WebClient, ErrorCode } = require('@slack/web-api');
 const Files = require('./files');
 
-const token = process.env.BOT_TOKEN;
+const token = settings.config.botToken;
 const web = new WebClient(token);
-var chance= new Chance();
+var chance = new Chance();
 
 
 function logging(msg) {
@@ -15,8 +15,7 @@ function logging(msg) {
 }
 
 (async () => {
-  // get window of posting from .env
-  const postWindow = JSON.parse(process.env.POST_WINDOW_UTC)
+  const postWindow = settings.config.postWindowUTC;
   const dtNow = DateTime.utc().toISO();
   const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO();
   const dtEnd = DateTime.fromFormat(postWindow.end, 'H:mm', {zone: 'utc'}).toISO();
@@ -69,19 +68,19 @@ function logging(msg) {
       }) //returns object
 
       // post a message
-      const postResponse = await web.chat.postMessage({
-        "channel": max.channelID,
-        "blocks": [
-          {
-            "type": "image",
-            "image_url": randomFile,
-            "alt_text": "randomNancy Image"
-          }
-        ]
-      })
-      logging(postResponse);
-      
+      // const postResponse = await web.chat.postMessage({
+      //   "channel": max.channelID,
+      //   "blocks": [
+      //     {
+      //       "type": "image",
+      //       "image_url": randomFile,
+      //       "alt_text": "randomNancy Image"
+      //     }
+      //   ]
+      // })
+
     } else logging('no chance')
   } else logging('window closed')
+
 })();
 
