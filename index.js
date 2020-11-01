@@ -68,16 +68,16 @@ function logging(msg) {
       }) //returns object
 
       // post a message
-      // const postResponse = await web.chat.postMessage({
-      //   "channel": max.channelID,
-      //   "blocks": [
-      //     {
-      //       "type": "image",
-      //       "image_url": randomFile,
-      //       "alt_text": "randomNancy Image"
-      //     }
-      //   ]
-      // })
+      const postResponse = await web.chat.postMessage({
+        "channel": max.channelID,
+        "blocks": [
+          {
+            "type": "image",
+            "image_url": randomFile,
+            "alt_text": "randomNancy Image"
+          }
+        ]
+      })
 
     } else logging('no chance')
   } else logging('window closed')
