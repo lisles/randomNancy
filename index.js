@@ -78,6 +78,7 @@ function logging(msg) {
           }
         ]
       })
+      logging(postResponse);
 
     } else logging('no chance')
   } else logging('window closed')
