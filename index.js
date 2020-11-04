@@ -21,12 +21,12 @@ function logging(msg) {
   const dtEnd = DateTime.fromFormat(postWindow.end, 'H:mm', {zone: 'utc'}).toISO();
   const nHoursOpen = Interval.fromDateTimes(DateTime.fromISO(dtStart), DateTime.fromISO(dtEnd)).count('hours');
   
-  // if we're between the start and end times from .env, run the script
+  // if we're between the start and end times, go forth
   if (dtNow >= dtStart && dtNow <= dtEnd) {
 
     // roll the dice, false is as likely to be called as the number of hours
     // in the start/end window minus 1
-    if (chance.weighted([false, true], [nHoursOpen-1, 1])) {
+    if (chance.weighted([false, true], [nHoursOpen/2, 1])) {
 
       // get random file from s3
       const randomFile = await Files.randomFile()
@@ -63,7 +63,7 @@ function logging(msg) {
           numberMessages: channelHistory.messages.length});    
       }
 
-      const max = channelAggs.reduce(function(prev, current) {
+      const max = channelAggs.reduce( function(prev, current) {
         return (prev.maxTS > current.maxTS) ? prev : current
       }) //returns object
 
