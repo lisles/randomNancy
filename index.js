@@ -16,7 +16,8 @@ function logging(msg) {
 }
 
 (async () => {
-  if (settings.config.debug) {console.log('***debug****')};
+  const debug = settings.config.debug
+  if (debug) {console.log('***debug****')};
 
   const postWindow = settings.config.postWindowUTC;
   const dtNow = DateTime.utc().toISO();
@@ -77,7 +78,7 @@ function logging(msg) {
       }) //returns object
 
       // post a message
-      if (!settings.config.debug) {
+      if (!debug) {
         try {
           const postResponse = await web.chat.postMessage({
             "channel": max.channelID,
