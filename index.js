@@ -11,10 +11,13 @@ var chance = new Chance();
 
 
 function logging(msg) {
+  console.log(msg);
   process.stdout.write(`[${DateTime.utc().toISO()}]::${msg}\n`);
 }
 
 (async () => {
+  if (settings.config.debug) {console.log('***debug****')};
+
   const postWindow = settings.config.postWindowUTC;
   const dtNow = DateTime.utc().toISO();
   const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO();
@@ -26,7 +29,8 @@ function logging(msg) {
 
     // roll the dice, false is as likely to be called as the number of hours
     // in the start/end window minus 1
-    if (chance.weighted([false, true], [nHoursOpen/2, 1])) {
+    const shouldPost = chance.weighted([false, true], [nHoursOpen/2, 1])
+    if (shouldPost) {
 
       // get random file from s3
       const randomFile = await Files.randomFile()
@@ -41,7 +45,6 @@ function logging(msg) {
       const randomNancyUser = users.members.filter( (user) => { 
         return user.name == 'randomnancy' 
       })
-      const randomNancyID = randomNancyUser[0].id;
 
       // invite RandomNancy to all channels, see what's in em 
       const conversations = await web.conversations.list();  
@@ -49,18 +52,24 @@ function logging(msg) {
       
       let channelAggs = [];
       // loop through the channels
-      for (channel of channels) {        
+      for (channel of channels) {      
+
         // randomNancy joins -- she must be in the channel to do history
-        await web.conversations.join({channel: channel.id});
+        try {
+          await web.conversations.join({channel: channel.id});
 
-        // get all the messages for analysis
-        const channelHistory = await web.conversations.history({channel: channel.id})
-        let maxTS = Math.max.apply(Math, channelHistory.messages.map(function(o) { return o.ts; }))
+          // get all the messages for analysis
+          const channelHistory = await web.conversations.history({channel: channel.id})
+          let maxTS = Math.max.apply(Math, channelHistory.messages.map(function(o) { return o.ts; }))
 
-        channelAggs.push({
-          channelID: channel.id,
-          maxTS: maxTS,
-          numberMessages: channelHistory.messages.length});    
+          channelAggs.push({
+            channelID: channel.id,
+            maxTS: maxTS,
+            numberMessages: channelHistory.messages.length});    
+
+        } catch (joinError) {
+          logging(joinError)
+        }
       }
 
       const max = channelAggs.reduce( function(prev, current) {
@@ -68,19 +77,27 @@ function logging(msg) {
       }) //returns object
 
       // post a message
-      const postResponse = await web.chat.postMessage({
-        "channel": max.channelID,
-        "blocks": [
-          {
-            "type": "image",
-            "image_url": randomFile,
-            "alt_text": "randomNancy Image"
-          }
-        ]
-      })
-      logging(JSON.stringify(postResponse));
+      if (!settings.config.debug) {
+        try {
+          const postResponse = await web.chat.postMessage({
+            "channel": max.channelID,
+            "blocks": [
+              {
+                "type": "image",
+                "image_url": randomFile,
+                "alt_text": "randomNancy Image"
+              }
+            ]
+          })
+          logging(JSON.stringify(postResponse));
+        } catch (error) {
+          logging(error);
+        }
+      }
+      else {logging('would have posted, but debugging')}
 
     } else logging('no chance')
+
   } else logging('window closed')
 
 })();
