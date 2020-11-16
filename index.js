@@ -36,7 +36,7 @@ function logging(msg) {
       let minMin = 120000 // 5 mins
       let maxMin = 900000 // 15
       const ms = Math.floor( Math.random() * (maxMin - minMin) + minMin );
-      setTimeout( () => {
+      setTimeout( async function () {
 
         // get random file from s3
         const randomFile = await Files.randomFile()
