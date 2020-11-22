@@ -12,7 +12,6 @@ var chance = new Chance();
 
 
 function logging(msg) {
-  console.log(msg);
   process.stdout.write(`[${DateTime.utc().toISO()}]::${msg}\n`);
 }
 
@@ -33,14 +32,19 @@ function logging(msg) {
     // in the start/end window minus 1
     const shouldPost = chance.weighted([false, true], [nHoursOpen/2, 1])
     if (shouldPost) {
-      // prep a timeout so we can vary the actual post time
-      let minMin = 120000 // 5 mins
-      let maxMin = 900000 // 15
-      const ms = Math.floor( Math.random() * (maxMin - minMin) + minMin );
-      setTimeout( async function () {
+      // prep a timeout so we can vary the actual post time      
+      var randomStartMS = 0
+      if (settings.config.post.randomizePostTime === true && debug === false) {
+        console.log('randomizing start time');
+        let minMin = 120000 // 5 mins
+        let maxMin = 900000 // 15
+        randomStartMS = Math.floor( Math.random() * (maxMin - minMin) + minMin );
+      };
 
+      setTimeout( async function () {
         // get random file from s3
         const randomFile = await Files.randomFile()
+        console.log(randomFile);
         logging(`file: ${randomFile}`);
         
         // get team info
@@ -74,8 +78,8 @@ function logging(msg) {
               maxTS: maxTS,
               numberMessages: channelHistory.messages.length});    
 
-          } catch (joinError) {
-            logging(joinError)
+          } catch (e) {
+            logging(e)
           }
         }
 
@@ -96,16 +100,17 @@ function logging(msg) {
                 }
               ]
             })
-            logging(JSON.stringify(postResponse));
-            postContentLog([DateTime.utc().toISO(), randomFile]);
-
+            logging(JSON.stringify(postResponse));            
           } catch (error) {
             logging(error);
           }
         }
         else {logging('would have posted, but debugging')}
 
-      }, ms); // end setTimeOut
+        // log to the db date and file we just posted
+        postContentLog([DateTime.utc().toISO(), randomFile]);
+
+      }, randomStartMS); // end setTimeOut
 
     } else logging('no chance')
 

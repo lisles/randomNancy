@@ -25,10 +25,6 @@ async function postContentLog(logValue) {
   await logSheet.addRow(logValue);
 
   const rows = await logSheet.getRows();
-  for (i = 0; i < rows.length; i++) {
-    console.log(rows[i].date,rows[i].content);
-  }
-
 }
 
 module.exports.postContentLog = postContentLog;
@@ -42,3 +38,7 @@ module.exports.postContentLog = postContentLog;
 //   // console.log(a1.value,b1.value);
 
 //   // reading/writing
+// for (i = 0; i < rows.length; i++) {
+//   console.log(rows[i].date,rows[i].content);
+// }
+
