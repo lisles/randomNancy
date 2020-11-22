@@ -97,8 +97,8 @@ function logging(msg) {
               ]
             })
             logging(JSON.stringify(postResponse));
-            postContentLog([DateTime.utc().toISO(), imageUrl]);
-            
+            postContentLog([DateTime.utc().toISO(), randomFile]);
+
           } catch (error) {
             logging(error);
           }
