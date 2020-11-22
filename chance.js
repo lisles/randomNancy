@@ -9,7 +9,7 @@ looking at luxon for date compare stuff.
 maybe config should be in ET and let luxon manage translating that to UTC
 so that we don't have to worry about dst/est offsets
 */
-const postWindow = settings.config.postWindowUTC
+const postWindow = settings.config.post.postWindowUTC
 
 const dtNow = DateTime.utc().toISO();
 const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO();

@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 const settings = require('./settings.json');
 
 const s3Params = {
-  Bucket: settings.config.AWS_BUCKET,
+  Bucket: settings.config.aws.AWS_BUCKET,
 };
 
 
@@ -24,6 +24,6 @@ exports.allFiles = async () => {
 exports.randomFile = async () => {
   // send a randomly selected file
   let files = await this.allFiles();
-  return settings.config.S3_URL + files[ Math.floor(Math.random() * files.length + 1) ].Key;
+  return settings.config.aws.S3_URL + files[ Math.floor(Math.random() * files.length + 1) ].Key;
 }
 

@@ -1,9 +1,10 @@
-const settings = require('./settings.json');
-
 const { DateTime, Interval } = require('luxon');
-const { Chance } = require('chance');
 const { WebClient, ErrorCode } = require('@slack/web-api');
+
+const settings = require('./settings.json');
+const { Chance } = require('chance');
 const Files = require('./files');
+const { postContentLog } = require('./db');
 
 const token = settings.config.botToken;
 const web = new WebClient(token);
@@ -19,7 +20,7 @@ function logging(msg) {
   const debug = settings.config.debug
   if (debug) {console.log('***debug****')};
 
-  const postWindow = settings.config.postWindowUTC;
+  const postWindow = settings.config.post.postWindowUTC;
   const dtNow = DateTime.utc().toISO();
   const dtStart = DateTime.fromFormat(postWindow.start, 'H:mm', {zone: 'utc'}).toISO();
   const dtEnd = DateTime.fromFormat(postWindow.end, 'H:mm', {zone: 'utc'}).toISO();
@@ -96,6 +97,8 @@ function logging(msg) {
               ]
             })
             logging(JSON.stringify(postResponse));
+            postContentLog([DateTime.utc().toISO(), imageUrl]);
+            
           } catch (error) {
             logging(error);
           }

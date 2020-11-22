@@ -12,6 +12,7 @@
     "aws-sdk": "^2.714.2",
     "chance": "^1.1.7",
     "dotenv": "^8.2.0",
+    "google-spreadsheet": "^3.0.13",
     "luxon": "^1.25.0"
   }
 }

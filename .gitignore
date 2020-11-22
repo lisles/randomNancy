@@ -21,4 +21,8 @@ yarn.lock
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# various settings files
 settings.json
+googleCredsLogging.json
+test.js
