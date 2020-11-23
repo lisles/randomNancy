@@ -23,11 +23,23 @@ async function getLogSheet() {
 async function postContentLog(logValue) {
   const logSheet = await getLogSheet();      
   await logSheet.addRow(logValue);
+}
 
+async function getLogRows() {
+  const logSheet = await getLogSheet();
   const rows = await logSheet.getRows();
+  let data = [];
+
+  for (i = 0; i < rows.length; i++) {
+    const rowData = {'date': rows[i].date, 'content': rows[i].content}
+    data.push(rowData);
+  }
+
+  return data
 }
 
 module.exports.postContentLog = postContentLog;
+module.exports.getLogRows = getLogRows;
 
 //   // console.log(`sheet: ${logSheet.title}`);
 //   // // console.log(logSheet.cellStats);
@@ -38,6 +50,7 @@ module.exports.postContentLog = postContentLog;
 //   // console.log(a1.value,b1.value);
 
 //   // reading/writing
+// const rows = await logSheet.getRows();
 // for (i = 0; i < rows.length; i++) {
 //   console.log(rows[i].date,rows[i].content);
 // }
