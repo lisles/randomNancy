@@ -4,6 +4,7 @@ const { WebClient, ErrorCode } = require('@slack/web-api');
 const settings = require('./settings.json');
 const { Chance } = require('chance');
 const Files = require('./files');
+const { randomPrompt } = require('./prompts')
 const { postContentLog } = require('./db');
 
 const token = settings.config.botToken;
@@ -43,9 +44,18 @@ function logging(msg) {
 
       setTimeout( async function () {
         // get random file from s3
-        const randomFile = await Files.randomFile()
-        console.log(randomFile);
-        logging(`file: ${randomFile}`);
+        if (settings.config.promptSheet) {
+          console.log('getting content');
+          var content = await randomPrompt();
+          console.log(content);
+          const splitContent = content.split('|');
+          var promptContent = splitContent[1];
+        } else {
+          var randomFile = await Files.randomFile()
+        }
+
+        console.log(randomFile || promptContent);
+        logging(`file: ${randomFile || promptContent }`);
         
         // get team info
         const team = await web.team.info();
@@ -89,26 +99,54 @@ function logging(msg) {
 
         // post a message
         if (!debug) {
-          try {
-            const postResponse = await web.chat.postMessage({
-              "channel": max.channelID,
-              "blocks": [
-                {
-                  "type": "image",
-                  "image_url": randomFile,
-                  "alt_text": "randomNancy Image"
-                }
-              ]
-            })
-            logging(JSON.stringify(postResponse));            
-          } catch (error) {
-            logging(error);
+          if (randomFile) {
+            try {
+              const postResponse = await web.chat.postMessage({
+                "channel": max.channelID,
+                "blocks": [
+                  {
+                    "type": "image",
+                    "image_url": randomFile,
+                    "alt_text": "randomNancy Image"
+                  }
+                ]
+              })
+              logging(JSON.stringify(postResponse));            
+            } catch (error) {
+              logging(error);
+            }
+          }
+          else {
+            try {
+              const postResponse = await web.chat.postMessage({
+                "channel": max.channelID,
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": promptContent
+                    },
+                  }
+                ]
+              })
+              logging(JSON.stringify(postResponse));            
+            } catch (error) {
+              logging(error);
+            }
+
           }
         }
         else {logging('would have posted, but debugging')}
 
         // log to the db date and file we just posted
-        postContentLog([DateTime.utc().toISO(), randomFile]);
+        console.log(randomFile);
+        if (!randomFile === undefined) {
+          postContentLog([DateTime.utc().toISO(), randomFile]);
+        } else {
+          console.log('logging');
+          postContentLog([DateTime.utc().toISO(), content]);
+        }
 
       }, randomStartMS); // end setTimeOut
 
