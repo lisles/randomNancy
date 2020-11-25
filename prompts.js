@@ -51,7 +51,7 @@ async function randomPrompt() {
   });
 
   // return a random file from the filtered set
-  return filteredPrompts[ Math.floor(Math.random() * filteredPrompts.length + 1) ]
+  return filteredPrompts[ Math.floor(Math.random() * filteredPrompts.length) ]
   
 }
 

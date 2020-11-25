@@ -31,7 +31,12 @@ function logging(msg) {
 
     // roll the dice, false is as likely to be called as the number of hours
     // in the start/end window minus 1
-    const shouldPost = chance.weighted([false, true], [nHoursOpen/2, 1])
+    if (settings.config.post.postChance) {
+      var shouldPost = chance.weighted([false, true], settings.config.post.postChance);      
+    }
+    else {
+      var shouldPost = chance.weighted([false, true], [nHoursOpen/2, 1]);
+    }
     if (shouldPost) {
       // prep a timeout so we can vary the actual post time      
       var randomStartMS = 0
@@ -43,17 +48,22 @@ function logging(msg) {
       };
 
       setTimeout( async function () {
-        // get random file from s3
+        // get random file from s3 or prompt from the google sheet
         if (settings.config.promptSheet) {
           var content = await randomPrompt();
-          const splitContent = content.split('|');
-          var promptContent = splitContent[1];
+          if (content) {
+            const splitContent = content.split('|');
+            var promptContent = splitContent[1];
+          } else {
+            var promptContent = `I'm out of ideas! Add new prompts!`
+          }
+          
         } else {
           var randomFile = await Files.randomFile()
         }
 
         console.log(randomFile || promptContent);
-        logging(`file: ${randomFile || promptContent }`);
+        logging(`posting: ${randomFile || promptContent }`);
         
         // get team info
         const team = await web.team.info();
@@ -133,17 +143,28 @@ function logging(msg) {
             } catch (error) {
               logging(error);
             }
-
           }
+
+          // log to the db date and file or prompt we just posted
+            if (!randomFile === undefined) {
+              postContentLog([DateTime.utc().toISO(), randomFile]);
+            } else {
+              // don't log if we exhausted the list. we want the placeholder to repeat.
+              if (content) {               
+                postContentLog([DateTime.utc().toISO(), content]);
+              }
+            }
         }
         else {logging('would have posted, but debugging')}
 
-        // log to the db date and file we just posted
         if (!randomFile === undefined) {
           postContentLog([DateTime.utc().toISO(), randomFile]);
         } else {
-          postContentLog([DateTime.utc().toISO(), content]);
-        }
+          if (content) {
+            // don't log if we exhausted the list. we want the placeholder to repeat
+            postContentLog([DateTime.utc().toISO(), content]);
+          }
+        }       
 
       }, randomStartMS); // end setTimeOut
 
