@@ -45,9 +45,7 @@ function logging(msg) {
       setTimeout( async function () {
         // get random file from s3
         if (settings.config.promptSheet) {
-          console.log('getting content');
           var content = await randomPrompt();
-          console.log(content);
           const splitContent = content.split('|');
           var promptContent = splitContent[1];
         } else {
@@ -116,6 +114,7 @@ function logging(msg) {
               logging(error);
             }
           }
+          // otherwise this is prompt post
           else {
             try {
               const postResponse = await web.chat.postMessage({
@@ -140,11 +139,9 @@ function logging(msg) {
         else {logging('would have posted, but debugging')}
 
         // log to the db date and file we just posted
-        console.log(randomFile);
         if (!randomFile === undefined) {
           postContentLog([DateTime.utc().toISO(), randomFile]);
         } else {
-          console.log('logging');
           postContentLog([DateTime.utc().toISO(), content]);
         }
 
