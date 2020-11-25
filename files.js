@@ -49,7 +49,7 @@ exports.randomFile = async () => {
   });
 
   // return a random file from the filtered set
-  return filteredFiles[ Math.floor(Math.random() * filteredFiles.length + 1) ]
+  return filteredFiles[ Math.floor(Math.random() * filteredFiles.length) ]
 
 }
 

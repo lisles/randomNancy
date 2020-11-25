@@ -146,25 +146,17 @@ function logging(msg) {
           }
 
           // log to the db date and file or prompt we just posted
-            if (!randomFile === undefined) {
-              postContentLog([DateTime.utc().toISO(), randomFile]);
-            } else {
-              // don't log if we exhausted the list. we want the placeholder to repeat.
-              if (content) {               
-                postContentLog([DateTime.utc().toISO(), content]);
-              }
+          if (typeof randomFile !== 'undefined') {
+            console.log('l');
+            postContentLog([DateTime.utc().toISO(), randomFile]);
+          } else {
+            // don't log if we exhausted the list. we want the placeholder to repeat.
+            if (content) {               
+              postContentLog([DateTime.utc().toISO(), content]);
             }
+          }
         }
         else {logging('would have posted, but debugging')}
-
-        if (!randomFile === undefined) {
-          postContentLog([DateTime.utc().toISO(), randomFile]);
-        } else {
-          if (content) {
-            // don't log if we exhausted the list. we want the placeholder to repeat
-            postContentLog([DateTime.utc().toISO(), content]);
-          }
-        }       
 
       }, randomStartMS); // end setTimeOut
 
