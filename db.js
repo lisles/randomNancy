@@ -41,17 +41,3 @@ async function getLogRows() {
 module.exports.postContentLog = postContentLog;
 module.exports.getLogRows = getLogRows;
 
-//   // console.log(`sheet: ${logSheet.title}`);
-//   // // console.log(logSheet.cellStats);
-//   // // let cells = await logSheet.loadCells('A1');
-//   // await logSheet.loadCells('A1:E10'); 
-//   // const a1 = logSheet.getCellByA1('A1'); 
-//   // const b1 = logSheet.getCellByA1('B1')
-//   // console.log(a1.value,b1.value);
-
-//   // reading/writing
-// const rows = await logSheet.getRows();
-// for (i = 0; i < rows.length; i++) {
-//   console.log(rows[i].date,rows[i].content);
-// }
-
