@@ -52,7 +52,6 @@ async function randomPrompt() {
 
   // return a random file from the filtered set
   return filteredPrompts[ Math.floor(Math.random() * filteredPrompts.length) ]
-  
 }
 
 module.exports.randomPrompt = randomPrompt;

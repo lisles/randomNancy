@@ -18,7 +18,7 @@ function logging(msg) {
 
 (async () => {
   const debug = settings.config.debug
-  if (debug) {console.log('***debug****')};
+  if (debug) {logging('***debug****')};
 
   const postWindow = settings.config.post.postWindowUTC;
   const dtNow = DateTime.utc().toISO();
@@ -30,7 +30,8 @@ function logging(msg) {
   if (dtNow >= dtStart && dtNow <= dtEnd) {
 
     // roll the dice, false is as likely to be called as the number of hours
-    // in the start/end window minus 1
+    // in the start/end window divided by 2 (magic number!).
+    // this can also be overriden in the config.post.postChance value.
     if (settings.config.post.postChance) {
       var shouldPost = chance.weighted([false, true], settings.config.post.postChance);      
     }
@@ -41,7 +42,6 @@ function logging(msg) {
       // prep a timeout so we can vary the actual post time      
       var randomStartMS = 0
       if (settings.config.post.randomizePostTime === true && debug === false) {
-        console.log('randomizing start time');
         let minMin = 120000 // 5 mins
         let maxMin = 900000 // 15
         randomStartMS = Math.floor( Math.random() * (maxMin - minMin) + minMin );
@@ -55,14 +55,12 @@ function logging(msg) {
             const splitContent = content.split('|');
             var promptContent = splitContent[1];
           } else {
-            var promptContent = `I'm out of ideas! Add new prompts!`
-          }
-          
+            var promptContent = `I'm out of ideas! Add new prompts!`;
+          }          
         } else {
-          var randomFile = await Files.randomFile()
+          var randomFile = await Files.randomFile();
         }
 
-        console.log(randomFile || promptContent);
         logging(`posting: ${randomFile || promptContent }`);
         
         // get team info
@@ -96,7 +94,7 @@ function logging(msg) {
               maxTS: maxTS,
               numberMessages: channelHistory.messages.length});    
 
-          } catch (e) {
+          } catch (e) {            
             logging(e)
           }
         }
@@ -147,7 +145,6 @@ function logging(msg) {
 
           // log to the db date and file or prompt we just posted
           if (typeof randomFile !== 'undefined') {
-            console.log('l');
             postContentLog([DateTime.utc().toISO(), randomFile]);
           } else {
             // don't log if we exhausted the list. we want the placeholder to repeat.

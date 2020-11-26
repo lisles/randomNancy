@@ -41,7 +41,7 @@ exports.randomFile = async () => {
   });
   const logContent = rawLog.map( (obj) => {
     return obj.content
-  })
+  });
 
   // filter the files out of aws list where they are in the logs list
   let filteredFiles = awsFiles.filter( (el) => {
