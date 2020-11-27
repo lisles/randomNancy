@@ -36,7 +36,7 @@ function logging(msg) {
       var shouldPost = chance.weighted([false, true], settings.config.post.postChance);      
     }
     else {
-      var shouldPost = chance.weighted([false, true], [nHoursOpen/2, 1]);
+      var shouldPost = chance.weighted([false, true], [nHoursOpen, 1]);
     }
     if (shouldPost) {
       // prep a timeout so we can vary the actual post time      
@@ -101,10 +101,13 @@ function logging(msg) {
 
         const max = channelAggs.reduce( function(prev, current) {
           return (prev.maxTS > current.maxTS) ? prev : current
-        }) //returns object (channel with most recent activity)
+        }) //returns channelAggs object (channel with most recent activity)
 
-        // post a message
-        if (!debug) {
+        /*
+        post a message if we're not in debug mode 
+        and it's been at least 3 hours since anyone has posted in that channel
+        */
+        if (!debug && Interval.fromDateTimes(DateTime.fromSeconds(max.maxTS), DateTime.utc()).count('hours') >= 3) {
           if (randomFile) {
             try {
               const postResponse = await web.chat.postMessage({

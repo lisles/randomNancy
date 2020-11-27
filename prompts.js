@@ -32,7 +32,6 @@ async function randomPrompt() {
 
   // return items that are less than 30 days ago. these should be filtered from aws files list
   const rawLog = logs.filter( (el) => {
-    // hours ago 
     const dt = DateTime.fromISO(el.date).toUTC();
     return Interval.fromDateTimes(dt, DateTime.utc()).count('days')-1 < 31;
   });
