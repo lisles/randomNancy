@@ -107,7 +107,7 @@ function logging(msg) {
         post a message if we're not in debug mode 
         and it's been at least 3 hours since anyone has posted in that channel
         */
-        if (!debug && Interval.fromDateTimes(DateTime.fromSeconds(max.maxTS), DateTime.utc()).count('hours') >= 3) {
+        if (!debug && Interval.fromDateTimes(DateTime.fromSeconds(max.maxTS), DateTime.utc()).count('hours') <= 3) {
           if (randomFile) {
             try {
               const postResponse = await web.chat.postMessage({
